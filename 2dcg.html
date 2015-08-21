@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>2D CG - Anime Character Generator</title>
+
+    <style type="text/css">
+        svg text {
+            font-family: sans-serif;
+        }
+        .svgbox {
+            display: inline-block;
+        }
+        .svgbox.rnd {
+            cursor: pointer;
+        }
+        .svgall {
+            display: inline-block;
+            float: left;
+            width:800px;
+        }
+        .params{
+            display: inline-block;
+        }
+
+        [part=skin] {
+            fill: #face8d;
+        }
+
+        [part=iris] path {
+            fill: #008;
+            stroke: #000;
+            stroke-width: 2;
+        }
+        [part=iris_light1] path {
+            fill: #00f;
+        }
+        [part=iris_light2] path {
+            fill: #89f;
+        }
+        [part=white] {
+            fill: #ddd;
+        }
+        [part=white_light] {
+            fill: #fff;
+        }
+
+        .trackbar {
+            width: 100px;
+            height: 16px;
+            border: 1px solid gray;
+            display: inline-block;
+            user-select: none;
+        }
+
+        .trackbar div {
+            display: inline-block;
+            background-color: #444;
+            width: 16px;
+            height: 16px;
+            position: relative;
+        }
+
+        .trackbar div.drag {
+            background-color: #888;
+        }
+    </style>
+
+    <script type="text/javascript" src="js/jquery-2.1.3.js"></script>
+    <script type="text/javascript" src="js/fun.js"></script>
+    <script type="text/javascript" src="js/ui.js"></script>
+    <script type="text/javascript" src="js/svg.js"></script>
+    <script type="text/javascript" src="js/engine.js"></script>
+
+    <script type="text/javascript" src="parts/eye.js"></script>
+
+    <script type="text/javascript">//<![CDATA[
+    var parset = [];
+    var EyeParams = [
+    {idx:1,name:'Наклон верхней линии'},
+    {idx:2,name:'Высота глаза'},
+    {idx:3,name:'Изгиб верхней линии'},
+    {idx:4,name:'Положение зрачка (X)'},
+    {idx:5,name:'Положение зрачка (Y)'},
+    {idx:6,name:'Вытянутость радужки'},
+    {idx:7,name:'Размер радужки'},
+    {idx:8,name:'Размер зрачка'},
+    {idx:9,name:'Длина правой черты'},
+    {idx:10,name:'Толщина верхней линии'},
+    {idx:11,name:'Контраст верхней линии'},
+    {idx:12,name:'Толщина нижней линии'},
+    {idx:13,name:'Подсветка радужки'},
+    {idx:14,name:'Затенение белка'}
+    ];
+    function mkparset() {
+        parset = [];
+        for (var i = 0; i<=3; i++) {for (var j = 0; j<=3; j++){
+            var a = [];
+            for (var k = 0;k<EyeParams.length; k++) a.push(
+            fit(0,+pars.eye[k].val()+
+            ($("#lock_eye"+EyeParams[k].idx).is(":checked")?0:rndnorm()/1.5),10));
+            parset.push(a);
+        }}
+    }
+    function redraw00() {
+        pars = {
+            eye: $.map(EyeParams,
+            function(el){return $("#par_eye"+el.idx)})
+        };
+        if (window.localStorage) {
+            window.localStorage['2dcg_zoomed'] = zoomed;
+            $("input").each(function (id, el) {
+                if (el.id) {
+                    window.localStorage['2dcg_input_' + el.getAttribute('id')] = 
+                    el.type=='checkbox'?el.checked:el.value;
+                }
+            });
+        }
+        var s0 = $("#s0");
+        initSvg(s0);
+        drawEye(s0.find("[part=eyeL]"),inp2num(pars.eye),{
+            clip:s0.find("defs"),
+            showHelpers:$("#show_helpers").is(":checked"),
+            prefix:"s0"
+        })
+        drawEye(s0.find("[part=eyeR]"),inp2num(pars.eye),{
+            clip:s0.find("defs"),
+            showHelpers:$("#show_helpers").is(":checked"),
+            prefix:"s0",
+            mirror:true
+        })
+    }
+    function redrawAll() {
+        redraw00();
+        mkparset();
+        for (var i = 1; i<=15; i++){
+            var s0 = $("#s"+i);
+            initSvg(s0);
+            drawEye(s0.find("[part=eyeL]"), parset[i], {
+                clip:s0.find("defs"),
+                showHelpers:false,
+                prefix:"s"+i
+            });
+            drawEye(s0.find("[part=eyeR]"), parset[i], {
+                clip:s0.find("defs"),
+                showHelpers:false,
+                prefix:"s"+i,
+                mirror:true
+            });
+        }
+    }
+        function initSvg(j) {
+            j.html("");
+            var id = j.attr("id");
+            svgadd(j,{
+                tag:'svg',
+                width:zoomed?800:200,
+                height:zoomed?800:200,
+                items:[{
+                    tag:'defs',
+                    items:[{
+                        tag:'pattern',
+                        id:'checkerPattern'+id,
+                        width:80,height:80,
+                        patternUnits:'userSpaceOnUse',
+                        items:[{
+                            tag:'rect',
+                            fill:'#f8f',
+                            x:0,y:0,width:40,height:40
+                        },{
+                            tag:'rect',
+                            fill:'#8f8',
+                            x:40,y:0,width:40,height:40
+                        },{
+                            tag:'rect',
+                            fill:'#f8f',
+                            x:40,y:40,width:40,height:40
+                        },{
+                            tag:'rect',
+                            fill:'#8f8',
+                            x:0,y:40,width:40,height:40
+                        }]
+                    }]
+                },{
+                    tag:'g',
+                    part:'root',
+                    transform:zoomed?'scale(4,4)':'',
+                    items:[{
+                        tag:'rect',
+                        x:10,y:10,width:180,height:180,rx:5,ry:5,
+                        style:"stroke:#006600; fill:url('#checkerPattern"+id+"')"
+                    },{
+                        tag:'g',
+                        part:'eyeL',
+                        //transform:'scale(0.5,0.5)'
+                        transform:'translate(100,50) scale(0.2,0.2)'
+                    },{
+                        tag:'g',
+                        part:'eyeR',
+                        //transform:'scale(-0.5,0.5)'
+                        transform:'translate(100,50) scale(-0.2,0.2)'
+                    }]
+                }]
+            })
+        }        
+    var pars = {eye:[]};
+    $(window).load(function () {
+        if (window.localStorage) {
+            zoomed = window.localStorage['2dcg_zoomed'] == 'true';
+            if (zoomed) $(".svgbox.rnd").toggle();
+            $("input").each(function (id, el) {
+                if (el.id) {
+                    var v = window.localStorage['2dcg_input_' + el.getAttribute('id')];
+                    if (v != null) {
+                        if (el.type == 'checkbox') el.checked = v=="true";
+                        else el.setAttribute('value', v);
+                    }
+                }
+            });
+        }
+        $(".trackbar").each(function (id, el) {
+            mkTrackBar($(el));
+        });
+        for (var i = 0; i<=15; i++)initSvg($("#s"+i));
+        redrawAll();
+        $("input").change(redraw00);
+        $(".svgbox.rnd").click(function(e){
+            var j = $(this).attr("index");
+            for (var i = 0; i<EyeParams.length; i++) {
+                pars.eye[i].val(parset[j][i]);
+            }
+            redrawAll();
+            $(".trackbar").trigger("val");
+        });
+    });
+    var zoomed = false;
+    function zoom() {
+        zoomed = !zoomed;
+        $(".svgbox.rnd").toggle();
+        var m = $(".svgbox.main svg");
+        var z = $(".svgbox.main g[part=root]");
+        redrawAll();
+    }
+
+    </script>
+
+</head>
+<body>
+<div class="svgall"><div id="s0" class="svgbox main"></div><div foreach-in="range(15,1)" foreach-el="i" class="svgbox rnd" attrs="{index:i,id:'s'+i}"></div></div>
+<div class="params">
+<input type="checkbox" id="show_helpers" checked="">Показать маркеры<br>
+<button onclick="redrawAll()">RND</button>
+<button onclick="zoom()">ZOOM</button>
+<br>
+<div foreach-in="EyeParams" foreach-el="Param">
+<input type="checkbox" attrs="{'id':'lock_eye'+Param.idx}"/>
+<div class="trackbar" attrs="{'data-tgt':'par_eye'+Param.idx}" min="0" max="10">
+<div></div></div>
+<label html="Param.idx+'. '+Param.name"></label>
+<input class="par" type="hidden" attrs="{id:'par_eye'+Param.idx}" value="5"><br>
+</div>
+
+</body>
+</html>
