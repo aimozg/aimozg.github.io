@@ -1,0 +1,3 @@
+[submodule "cocsed"]
+	path = cocsed
+	url = git@github.com:aimozg/coc-sed.git
