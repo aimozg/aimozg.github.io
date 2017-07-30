@@ -177,31 +177,31 @@
             <color name="pale">#f2e8e3</color>
         </property>
         <!-- Not yet in game-->
-        <!-- <property name="iris" src="'blue'" default="#0000ff">
-             &lt;!&ndash;Iris color overrides go here&ndash;&gt;
-             <color name="blue">#68a9ca</color>
-             <color name="aqua">#a0c5c5</color>
-             <color name="green">#4e7e4e</color>
-             <color name="amber">#ca9168</color>
-             <color name="hazel">#ad7852</color>
-             <color name="brown">#7e624e</color>
-             <color name="dark">#564b43</color>
-             <color name="red">#b34d4d</color>
-             <color name="pink">#d8c0d8</color>
-             <color name="purple">#7f619e</color>
-             <color name="steel">#808080</color>
-             <color name="gray">#999999</color>
-             <color name="silver">#b3b3b3</color>
-             <color name="golden">#bd9442</color>
-             <color name="crystal">#e3e8e8</color>
-             <color name="ruby">#e25050</color>
-             <color name="topaz">#dada58</color>
-             <color name="malachyte">#4db34d</color>
-             <color name="emerald">#58da58</color>
-             <color name="beryll">#68ca99</color>
-             <color name="sapphire">#5c70d6</color>
-             <color name="amethyst">#b288dd</color>
-         </property>-->
+       <!-- <property name="iris" src="'blue'" default="#0000ff">
+            &lt;!&ndash;Iris color overrides go here&ndash;&gt;
+            <color name="blue">#68a9ca</color>
+            <color name="aqua">#a0c5c5</color>
+            <color name="green">#4e7e4e</color>
+            <color name="amber">#ca9168</color>
+            <color name="hazel">#ad7852</color>
+            <color name="brown">#7e624e</color>
+            <color name="dark">#564b43</color>
+            <color name="red">#b34d4d</color>
+            <color name="pink">#d8c0d8</color>
+            <color name="purple">#7f619e</color>
+            <color name="steel">#808080</color>
+            <color name="gray">#999999</color>
+            <color name="silver">#b3b3b3</color>
+            <color name="golden">#bd9442</color>
+            <color name="crystal">#e3e8e8</color>
+            <color name="ruby">#e25050</color>
+            <color name="topaz">#dada58</color>
+            <color name="malachyte">#4db34d</color>
+            <color name="emerald">#58da58</color>
+            <color name="beryll">#68ca99</color>
+            <color name="sapphire">#5c70d6</color>
+            <color name="amethyst">#b288dd</color>
+        </property>-->
     </palette>
     <colorkeys>
         <key src="#FF88FF" base="hair" transform="lighten(25)"/>
@@ -221,67 +221,67 @@
         <!--<key src="#FFFFFF" base="sclera"/>-->
         <key src="#0026FF" base="iris"/>
     </colorkeys>
-    <!-- <spritesheet file="arms.png" cellwidth="192" cellheight="192">
-         <row>armf-error,arm0f,arm11f,,,,,,,,,,,,,</row>
-         <row>armb-error,arm0b,,,,,,,,,,,,,,</row>
-     </spritesheet>
-     <spritesheet file="breasts.png" cellwidth="192" cellheight="192">
-         <row>breasts-error,breasts0,breastsD,,,,,,,,,,,,,</row>
-         <row>,,,,,,,,,,,,,,,</row>
-     </spritesheet>
-     <spritesheet file="ears.png" cellwidth="192" cellheight="192">
-         <row>ears-error,ears0,ears9,,,,,,,,,,,,,</row>
-         <row>,,ears9f,,,,,,,,,,,,,</row>
-     </spritesheet>
-     <spritesheet file="eyes.png" cellwidth="192" cellheight="192">
-         <row>eyes-error,eyes2M,eyes4S,eyes2Lb,eyes6,,,,,,,,,,,</row>
-         <row>,,,,,,,,,,,,,,,</row>
-     </spritesheet>
-     <spritesheet file="face.png" cellwidth="192" cellheight="192">
-         <row>face-error,face0,,,,,,,,,,,,,,</row>
-         <row>,,,,,,,,,,,,,,,</row>
-     </spritesheet>
-     <spritesheet file="hair.png" cellwidth="192" cellheight="192">
-         <row>hairf-error,hair0f,hair6f,,,,,,,,,,,,,</row>
-         <row>hairb-error,,,,,,,,,,,,,,,</row>
-     </spritesheet>
-     <spritesheet file="horns.png" cellwidth="192" cellheight="192">
-         <row>horns-error,horns2S,horns2L,,,,,,,,,,,,,</row>
-         <row>,,,,,,,,,,,,,,,</row>
-     </spritesheet>
-     <spritesheet file="legs.png" cellwidth="192" cellheight="192">
-         <row>legs-error,legs0,legs3,legs35fsit,,,,,,,,,,,,</row>
-         <row>,,,,,,,,,,,,,,,</row>
-     </spritesheet>
-     <spritesheet file="tail.png" cellwidth="192" cellheight="192">
-         <row>tail-error,tail-fox1,tail-fox2,tail28,,,,,,,,,,,,</row>
-         <row>,,,,,,,,,,,,,,,</row>
-     </spritesheet>
-     <spritesheet file="torso.png" cellwidth="192" cellheight="192">
-         <row>torso-error,torso0,,,,,,,,,,,,,,</row>
-         <row>,,,,,,,,,,,,,,,</row>
-     </spritesheet>
-     <spritesheet file="wings.png" cellwidth="192" cellheight="192">
-         <row>wings-error,wings-23,,,,,,,,,,,,,,</row>
-         <row>,wings-23b,,,,,,,,,,,,,,</row>
-     </spritesheet>-->
+   <!-- <spritesheet file="arms.png" cellwidth="192" cellheight="192">
+        <row>armf-error,arm0f,arm11f,,,,,,,,,,,,,</row>
+        <row>armb-error,arm0b,,,,,,,,,,,,,,</row>
+    </spritesheet>
+    <spritesheet file="breasts.png" cellwidth="192" cellheight="192">
+        <row>breasts-error,breasts0,breastsD,,,,,,,,,,,,,</row>
+        <row>,,,,,,,,,,,,,,,</row>
+    </spritesheet>
+    <spritesheet file="ears.png" cellwidth="192" cellheight="192">
+        <row>ears-error,ears0,ears9,,,,,,,,,,,,,</row>
+        <row>,,ears9f,,,,,,,,,,,,,</row>
+    </spritesheet>
+    <spritesheet file="eyes.png" cellwidth="192" cellheight="192">
+        <row>eyes-error,eyes2M,eyes4S,eyes2Lb,eyes6,,,,,,,,,,,</row>
+        <row>,,,,,,,,,,,,,,,</row>
+    </spritesheet>
+    <spritesheet file="face.png" cellwidth="192" cellheight="192">
+        <row>face-error,face0,,,,,,,,,,,,,,</row>
+        <row>,,,,,,,,,,,,,,,</row>
+    </spritesheet>
+    <spritesheet file="hair.png" cellwidth="192" cellheight="192">
+        <row>hairf-error,hair0f,hair6f,,,,,,,,,,,,,</row>
+        <row>hairb-error,,,,,,,,,,,,,,,</row>
+    </spritesheet>
+    <spritesheet file="horns.png" cellwidth="192" cellheight="192">
+        <row>horns-error,horns2S,horns2L,,,,,,,,,,,,,</row>
+        <row>,,,,,,,,,,,,,,,</row>
+    </spritesheet>
+    <spritesheet file="legs.png" cellwidth="192" cellheight="192">
+        <row>legs-error,legs0,legs3,legs35fsit,,,,,,,,,,,,</row>
+        <row>,,,,,,,,,,,,,,,</row>
+    </spritesheet>
+    <spritesheet file="tail.png" cellwidth="192" cellheight="192">
+        <row>tail-error,tail-fox1,tail-fox2,tail28,,,,,,,,,,,,</row>
+        <row>,,,,,,,,,,,,,,,</row>
+    </spritesheet>
+    <spritesheet file="torso.png" cellwidth="192" cellheight="192">
+        <row>torso-error,torso0,,,,,,,,,,,,,,</row>
+        <row>,,,,,,,,,,,,,,,</row>
+    </spritesheet>
+    <spritesheet file="wings.png" cellwidth="192" cellheight="192">
+        <row>wings-error,wings-23,,,,,,,,,,,,,,</row>
+        <row>,wings-23b,,,,,,,,,,,,,,</row>
+    </spritesheet>-->
     <!--<spritesheet file=".png" cellwidth="192" cellheight="192">
         <row>,,,,,,,,,,,,,,,</row>
     </spritesheet>-->
     <spritesheet file="char1.png" cellwidth="192" cellheight="192">
-        <row>,,,,,,,,,,,,,,,</row>
+        <row>_help,_placeholder,,,,,,,,,,,,,,</row>
         <row>horns-error,horns2S,horns2L,,,,,,,,,,,,,</row>
-        <row>hairf-error,hair0f,hair6f,,,,,,,,,,,,,</row>
-        <row>eyes-error,eyes2M,eyes4S,eyes2Lb,eyes6,,,,,,,,,,,</row>
-        <row>ears-error,ears0,ears9,ears9f,,,,,,,,,,,,</row>
-        <row>face-error,face0,,,,,,,,,,,,,,</row>
+        <row>hairf-error,hair0f-old,hair6f,hair0f,,,,,,,,,,,,</row>
+        <row>eyes-error,eyes2M,eyes4S,eyes2Lb,eyes6,eyes-orca,,,,,,,,,,</row>
+        <row>ears-error,ears0,ears9,ears9f,ears21f,,,,,,,,,,,</row>
+        <row>face-error,face0,face28,,,,,,,,,,,,,</row>
         <row>breasts-error,breasts0,breastsD,,,,,,,,,,,,,</row>
-        <row>armf-error,arm0f,arm11f,,,,,,,,,,,,,</row>
-        <row>torso-error,torso0,,,,,,,,,,,,,,</row>
-        <row>armb-error,arm0b,,,,,,,,,,,,,,</row>
-        <row>legs-error,legs0,legs3,legs35fsit,,,,,,,,,,,,</row>
+        <row>armf-error,arm0f,arm11f,arm17f,,,,,,,,,,,,</row>
+        <row>torso-error,torso0,torso-orca,,,,,,,,,,,,,</row>
+        <row>armb-error,arm0b,fins-orca,,,,,,,,,,,,,</row>
+        <row>legs-error,legs0,legs3,legs35fsit,legs37,legs-kraken,legs26,,,,,,,,,</row>
         <row>hairb-error,,,,,,,,,,,,,,,</row>
-        <row>tail-error,tail-fox1,tail-fox2,tail28,,,,,,,,,,,,</row>
+        <row>tail-error,tail-fox1,tail-fox2,tail28,tail37,,,,,,,,,,,</row>
         <row>wings-error,wings-23,wings-23b,,,,,,,,,,,,,</row>
         <row>,,,,,,,,,,,,,,,</row>
         <row>,,,,,,,,,,,,,,,</row>
@@ -353,6 +353,9 @@
             <case value="9"><!--EARS_FOX-->
                 <layer file="ears9f"/>
             </case>
+            <case value="21"><!--EARS_ORCA-->
+                <layer file="ears21f"/>
+            </case>
         </switch>
 
 
@@ -388,7 +391,7 @@
                         <layer file="hair0f"/>
                     </case>
                     <default>
-                        <layer file="hair0f"/>
+                        <layer file="hair0f-old"/>
                         <!--<layer file="hairf-error"/>-->
                     </default>
                 </switch>
@@ -402,6 +405,7 @@
             <case value="9"><!--EARS_FOX-->
                 <layer file="ears9"/><!--also ears9f-->
             </case>
+            <case value="21"><!--EARS_ORCA--></case>
             <default>
                 <layer file="ears0"/>
                 <layer file="ears-error"/>
@@ -410,6 +414,9 @@
         <switch>
             <case test="faceType == 0"><!--FACE_HUMAN-->
                 <layer file="face0"/>
+            </case>
+            <case test="faceType == 28"><!--FACE_ORCA-->
+                <layer file="face28"/>
             </case>
             <default>
                 <layer file="face0"/>
@@ -437,6 +444,9 @@
             <case value="11"><!--ARM_TYPE_LION-->
                 <layer file="arm11f"/>
             </case>
+            <case value="17"><!--ARM_TYPE_ORCA-->
+                <layer file="arm17f"/>
+            </case>
             <default>
                 <layer file="arm0f"/>
                 <layer file="armf-error"/>
@@ -460,6 +470,12 @@
                         <layer file="legs-error"/>
                     </default>
                 </switch>
+            </case>
+            <case value="26"><!--LOWER_BODY_TYPE_SCYLLA-->
+                <layer file="legs26"/>
+            </case>
+            <case value="37"><!--LOWER_BODY_TYPE_ORCA-->
+                <layer file="legs37"/>
             </case>
             <default>
                 <layer file="legs0"/>
@@ -508,6 +524,9 @@
             </case>
             <case value="28"><!--TAIL_TYPE_MANTICORE_PUSSYTAIL-->
                 <layer file="tail28"/>
+            </case>
+            <case value="37"><!--TAIL_TYPE_ORCA-->
+                <layer file="tail37"/>
             </case>
             <default>
                 <layer file="tail-error"/>
