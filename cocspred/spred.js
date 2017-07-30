@@ -60,6 +60,7 @@ var spred;
             this.model = model;
             this._layers = [];
             this.canvas = newCanvas(model.width * zoom, model.height * zoom);
+            this.canvas.setAttribute('focusable', 'true');
             this.layers = visibleNames.slice(0);
             this.redraw();
         }
@@ -116,8 +117,21 @@ var spred;
             this.ctx2d = this.canvas.getContext('2d');
             this.ctx2d.drawImage(src, srcX, srcY, width, height, 0, 0, width, height);
         }
+        updateUI() {
+            let c2d = this.ui.find('canvas')[0].getContext('2d');
+            c2d.drawImage(this.canvas, 0, 0, 32, 32);
+        }
     }
     spred.Layer = Layer;
+    function url2img(src) {
+        return new Promise((resolve, reject) => {
+            let img = document.createElement('img');
+            img.onload = (e) => {
+                resolve(img);
+            };
+            img.src = src;
+        });
+    }
     class Spritesheet {
         constructor(modeldir, src) {
             this.sprites = {};
@@ -134,16 +148,14 @@ var spred;
                             positions[names[j]] = [this.cellwidth * j, this.cellheight * i];
                     }
                 });
-                let img = document.createElement('img');
-                img.onload = (e) => {
+                url2img(modeldir + x.attr('file')).then(img => {
                     Object.keys(positions)
                         .forEach(key => {
                         this.sprites[key] = new Layer(key, this.cellheight, this.cellwidth, img, positions[key][0], positions[key][1]);
                     });
                     this.img = img;
                     resolve(this);
-                };
-                img.src = modeldir + x.attr('file');
+                });
             });
         }
         isLoaded() {
@@ -242,7 +254,9 @@ var spred;
             composite.zoom++;
         }), $new('button.ctrl', $new('span.fa.fa-search-minus')).click(() => {
             composite.zoom--;
-        })), $new('div', $new('.canvas', composite.canvas)), $new('label', 'Layers:'), $new('.LayerBadges')
+        })), $new('div', $new('.canvas', composite.canvas)), $new('label', $new('span.fa.fa-caret-down'), 'Layers').click(e => {
+            composite.ui.find('.LayerBadges').toggleClass('collapse');
+        }), $new('.LayerBadges.collapse')
         /*$new('textarea.col.form-control'
         ).val(layers.join(', ')
         ).on('input change', e => {
@@ -337,6 +351,7 @@ var spred;
         let l = getSelLayer();
         if (l)
             l.ui.addClass('selected');
+        $('#SelLayerCanvas').html('').append(l.canvas);
     }
     spred.selLayer = selLayer;
     function selLayerUp() {
@@ -351,6 +366,52 @@ var spred;
             swapLayers(i, i + 1);
     }
     spred.selLayerDown = selLayerDown;
+    function colormap(src, map) {
+        let dst = new ImageData(src.width, src.height);
+        let sarr = new Uint32Array(src.data.buffer);
+        let darr = new Uint32Array(dst.data.buffer);
+        for (let i = 0, n = darr.length; i < n; i++) {
+            darr[i] = sarr[i];
+            for (let j = 0, m = map.length; j < m; j++) {
+                if (sarr[i] === map[j][0]) {
+                    darr[i] = map[j][1];
+                    break;
+                }
+            }
+        }
+        return dst;
+    }
+    spred.colormap = colormap;
+    function grabData(blob) {
+        let mask = $('#ClipboardMask').val();
+        let i32mask = 0;
+        if (mask && mask.charAt(0) == '#' && mask.length == 7) {
+            i32mask = +('0x' + mask.slice(1)) | 0;
+            //noinspection JSBitwiseOperatorUsage
+            if (!(i32mask & 0xff000000)) {
+                i32mask = (i32mask | 0xff000000) >>> 0;
+            }
+        }
+        url2img(URL.createObjectURL(blob)).then(img => {
+            switch ($("input[name=clipboard-action]:checked").val()) {
+                case 'replace':
+                    let layer = getSelLayer();
+                    if (!layer)
+                        return;
+                    layer.ctx2d.clearRect(0, 0, layer.width, layer.height);
+                    layer.ctx2d.drawImage(img, 0, 0);
+                    if (i32mask != 0) {
+                        let data = layer.ctx2d.getImageData(0, 0, layer.width, layer.height);
+                        data = colormap(data, [[i32mask, 0]]);
+                        layer.ctx2d.clearRect(0, 0, layer.width, layer.height);
+                        layer.ctx2d.putImageData(data, 0, 0);
+                    }
+                    layer.updateUI();
+                    redrawAll();
+                    break;
+            }
+        });
+    }
     $(() => {
         $.ajax(basedir + 'res/model.xml', {
             dataType: 'xml',
@@ -359,13 +420,34 @@ var spred;
             spred.g_model.whenLoaded.then((model) => {
                 console.log("Model = ", model);
                 for (let ln of model.layerNames) {
-                    model.layers[ln].ui = $new('div.LayerListItem', $new('label', ln).click(e => selLayer(ln)), newCanvas(32, 32, (ctx2d) => {
-                        ctx2d.drawImage(model.layers[ln].canvas, 0, 0, 32, 32);
-                    }));
+                    let layer = model.layers[ln];
+                    layer.ui = $new('div.LayerListItem', $new('label', ln).click(e => selLayer(ln)), newCanvas(32, 32));
+                    layer.updateUI();
                 }
+                $('#SelLayerCanvas')
+                    .css('min-width', model.width + 'px')
+                    .css('min-height', model.height + 'px');
                 showLayerList(model);
                 addCompositeView(spred.defaultLayerList, 3);
-                $('#ClipboardGrabber');
+                addCompositeView(spred.defaultLayerList, 2);
+                addCompositeView(spred.defaultLayerList, 1);
+                addCompositeView(spred.defaultLayerList, 1);
+                $('#ClipboardGrabber').on('paste', e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    let cd = e.originalEvent.clipboardData;
+                    for (let i = 0, n = cd.items.length; i < n; i++) {
+                        let item = cd.items[i];
+                        if (item.type.indexOf('image/') == 0) {
+                            grabData(item.getAsFile());
+                            return;
+                        }
+                        else {
+                            console.log('skip ' + item.kind + ' ' + item.type);
+                        }
+                    }
+                    alert("Please paste 1 image data or file");
+                });
             });
         });
     });
