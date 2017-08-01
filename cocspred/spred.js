@@ -112,7 +112,7 @@ var spred;
                     idata = colormap(idata, cmap);
                     p0.then(ctx2d => {
                         return createImageBitmap(idata).then(bmp => {
-                            ctx2d.drawImage(bmp, x, y, w, h, x * z, y * z, w * z, h * z);
+                            ctx2d.drawImage(bmp, 0, 0, w, h, x * z, y * z, w * z, h * z);
                             return ctx2d;
                         });
                     });
