@@ -6,6 +6,14 @@
 var spred;
 (function (spred) {
     const basedir = window['spred_basedir'] || '../../';
+    function RGBA(i) {
+        let rgb = i.toRgb();
+        return (((rgb.a * 0xff) & 0xff) << 24
+            | (rgb.b & 0xff) << 16
+            | (rgb.g & 0xff) << 8
+            | (rgb.r & 0xff)) >>> 0;
+    }
+    spred.RGBA = RGBA;
     /*
     function mkimg(colors: string[][]): HTMLCanvasElement {
         const hex     = {a: 10, b: 11, c: 12, d: 13, e: 14, f: 15, A: 10, B: 11, C: 12, D: 13, E: 14, F: 15};
@@ -55,10 +63,15 @@ var spred;
         return canvas;
     }
     spred.newCanvas = newCanvas;
+    function paletteOptions(palette) {
+        return Object.keys(palette).map(name => $new('option', name).attr('value', palette[name]));
+    }
+    spred.paletteOptions = paletteOptions;
     class Composite {
         constructor(model, visibleNames = [], zoom = 1) {
             this.model = model;
             this._layers = [];
+            this.colormap = {};
             this.canvas = newCanvas(model.width * zoom, model.height * zoom);
             this.canvas.setAttribute('focusable', 'true');
             this.layers = visibleNames.slice(0);
@@ -76,10 +89,34 @@ var spred;
             ctx2d.imageSmoothingEnabled = false;
             let z = this.zoom;
             ctx2d.clearRect(x * z, y * z, w * z, h * z);
+            let p0 = new Promise((resolve, reject) => {
+                resolve(ctx2d);
+            });
+            let cmap = [];
+            for (let ck of this.model.colorkeys) {
+                if (!(ck.base in this.colormap))
+                    continue;
+                let base = tinycolor(this.colormap[ck.base]);
+                if (ck.transform)
+                    for (let tf of ck.transform.split(',')) {
+                        let m = tf.match(/^([a-z]+)\((\d+)\)$/);
+                        if (m && m[1] in base)
+                            base = base[m[1]].apply(base, [+m[2]]);
+                    }
+                cmap.push([RGBA(tinycolor(ck.src)), RGBA(base)]);
+            }
             for (let a = this.model.layerNames, i = a.length - 1; i >= 0; i--) {
                 let lname = a[i];
-                if (this._layers.indexOf(lname) >= 0)
-                    ctx2d.drawImage(this.model.layers[lname].canvas, x, y, w, h, x * z, y * z, w * z, h * z);
+                if (this._layers.indexOf(lname) >= 0) {
+                    let idata = this.model.layers[lname].ctx2d.getImageData(x, y, w, h);
+                    idata = colormap(idata, cmap);
+                    p0.then(ctx2d => {
+                        return createImageBitmap(idata).then(bmp => {
+                            ctx2d.drawImage(bmp, x, y, w, h, x * z, y * z, w * z, h * z);
+                            return ctx2d;
+                        });
+                    });
+                }
             }
         }
         hideAll(name) {
@@ -167,6 +204,7 @@ var spred;
         constructor(src) {
             this.layers = {};
             this.layerNames = [];
+            this.colorProps = [];
             this.colorkeys = [];
             let xmodel = $(src).children('model');
             this.name = xmodel.attr('name');
@@ -178,15 +216,23 @@ var spred;
                 common: {}
             };
             xmodel.find('colorkeys>key').each((i, e) => {
-                this.colorkeys[e.getAttribute('src')] = {
+                this.colorkeys.push({
                     src: e.getAttribute('src'),
                     base: e.getAttribute('base'),
                     transform: e.getAttribute('transform') || ''
-                };
+                });
             });
             //noinspection CssInvalidHtmlTagReference
             xmodel.find('palette>common>color').each((i, e) => {
                 this.palettes.common[e.getAttribute('name')] = e.textContent;
+            });
+            xmodel.find('property').each((i, e) => {
+                let cpname = e.getAttribute('name');
+                this.colorProps.push(cpname);
+                let p = this.palettes[cpname] = {};
+                $(e).find('color').each((ci, ce) => {
+                    p[ce.getAttribute('name')] = ce.textContent;
+                });
             });
             xmodel.find('spritesheet').each((i, x) => {
                 let spritesheet = new Spritesheet(this.dir, x);
@@ -254,9 +300,22 @@ var spred;
             composite.zoom++;
         }), $new('button.ctrl', $new('span.fa.fa-search-minus')).click(() => {
             composite.zoom--;
-        })), $new('div', $new('.canvas', composite.canvas)), $new('label', $new('span.fa.fa-caret-down'), 'Layers').click(e => {
+        })), $new('div', $new('.canvas', composite.canvas)), $new('div', $new('label', $new('span.fa.fa-caret-down'), 'Layers').click(e => {
             composite.ui.find('.LayerBadges').toggleClass('collapse');
-        }), $new('.LayerBadges.collapse')
+        }), $new('.LayerBadges.collapse')), $new('div', $new('label', $new('span.fa.fa-caret-down'), 'Colors').click(e => {
+            composite.ui.find('.Colors').toggleClass('collapse');
+        }), $new('.Colors.collapse', ...spred.g_model.colorProps.map(cpname => $new('.row.control-group', $new('label.control-label.col-4', cpname), $new('select.form-control.col-8', ...[
+            $new('option', '--none--').attr('selected', 'true')
+        ].concat(paletteOptions(spred.g_model.palettes['cpname'] || {}), paletteOptions(spred.g_model.palettes['common']))).change(e => {
+            let s = e.target;
+            if (s.value) {
+                composite.colormap[cpname] = s.value;
+            }
+            else {
+                delete composite.colormap[cpname];
+            }
+            composite.redraw();
+        })))))
         /*$new('textarea.col.form-control'
         ).val(layers.join(', ')
         ).on('input change', e => {
@@ -384,14 +443,7 @@ var spred;
     spred.colormap = colormap;
     function grabData(blob) {
         let mask = $('#ClipboardMask').val();
-        let i32mask = 0;
-        if (mask && mask.charAt(0) == '#' && mask.length == 7) {
-            i32mask = +('0x' + mask.slice(1)) | 0;
-            //noinspection JSBitwiseOperatorUsage
-            if (!(i32mask & 0xff000000)) {
-                i32mask = (i32mask | 0xff000000) >>> 0;
-            }
-        }
+        let i32mask = mask ? RGBA(tinycolor(mask)) : 0;
         url2img(URL.createObjectURL(blob)).then(img => {
             switch ($("input[name=clipboard-action]:checked").val()) {
                 case 'replace':
@@ -421,13 +473,19 @@ var spred;
                 console.log("Model = ", model);
                 for (let ln of model.layerNames) {
                     let layer = model.layers[ln];
-                    layer.ui = $new('div.LayerListItem', $new('label', ln).click(e => selLayer(ln)), newCanvas(32, 32));
+                    if (!layer) {
+                        console.warn("Non-existing layer " + ln + " refered");
+                        continue;
+                    }
+                    layer.ui = $new('div.LayerListItem', $new('label', ln), newCanvas(32, 32)).click(e => selLayer(ln));
                     layer.updateUI();
                 }
                 $('#SelLayerCanvas')
                     .css('min-width', model.width + 'px')
                     .css('min-height', model.height + 'px');
+                $('#lmb-color').html('').append(model.colorkeys.map(ck => $new('option', ck.base + (ck.transform ? ' ' + ck.transform : '')).attr('value', ck.src)));
                 showLayerList(model);
+                selLayer(model.layerNames[0]);
                 addCompositeView(spred.defaultLayerList, 3);
                 addCompositeView(spred.defaultLayerList, 2);
                 addCompositeView(spred.defaultLayerList, 1);
