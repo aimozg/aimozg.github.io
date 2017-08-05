@@ -19,6 +19,10 @@ var spred;
         return Math.floor(Math.random() * n);
     }
     spred.randint = randint;
+    function randel(arr) {
+        return arr[randint(arr.length)];
+    }
+    spred.randel = randel;
     let FileAsker;
     (function (FileAsker) {
         let fileReaders = {};
@@ -472,7 +476,10 @@ var spred;
         [[], [], [], ['wings-mantibig_bg', 'wings-mantibig_fg']]
     ];
     function defaultLayerList() {
-        return spred.g_layergen.map(opt => opt[randint(opt.length)]).map(s => (typeof s == 'string' ? [s] : s)).reduce((r, e) => r.concat(e), []).filter(s => s);
+        return spred.g_layergen.map(randel)
+            .map(s => (typeof s == 'string' ? [s] : s))
+            .reduce((r, e) => r.concat(e), [])
+            .filter(s => s);
     }
     spred.defaultLayerList = defaultLayerList;
     function updateCompositeLayers(composite) {
@@ -498,6 +505,13 @@ var spred;
                 console.warn("Non-existing layer " + ln);
             }
         }
+        let commonPalette = spred.g_model.palettes['common'];
+        for (let cpname of spred.g_model.colorProps) {
+            let cpPal = spred.g_model.palettes[cpname] || {};
+            let cname = randel(Object.keys(commonPalette).concat(Object.keys(cpPal)));
+            composite.colormap[cpname] = cpPal[cname] || commonPalette[cname];
+        }
+        composite.redraw();
         $('#ViewList').append(composite.ui = $new('.card.card-secondary.d-inline-flex', $new('.card-block', $new('h5.card-title', $new('button.ctrl.text-danger.pull-right', $new('span.fa.fa-close')).click(() => {
             removeCompositeView(composite);
         }), $new('button.ctrl', $new('span.fa.fa-search-plus')).click(() => {
@@ -508,9 +522,11 @@ var spred;
             composite.ui.find('.LayerBadges').toggleClass('collapse');
         }), $new('button.ctrl', $new('span.fa.fa-paint-brush')).click(e => {
             composite.ui.find('.Colors').toggleClass('collapse');
-        })), $new('div', $new('.canvas', composite.canvas)), $new('.LayerBadges.collapse'), $new('div', $new('.Colors.collapse', ...spred.g_model.colorProps.map(cpname => $new('.row.control-group', $new('label.control-label.col-4', cpname), $new('select.form-control.col-8', ...[
-            $new('option', '--none--').attr('selected', 'true')
-        ].concat(paletteOptions(spred.g_model.palettes['cpname'] || {}), paletteOptions(spred.g_model.palettes['common']))).change(e => {
+        })), $new('div', $new('.canvas', composite.canvas)), $new('.LayerBadges.collapse'), $new('div', $new('.Colors.collapse', ...spred.g_model.colorProps.map(cpname => $new('.row.control-group', $new('label.control-label.col-4', cpname), $new('select.form-control.col-8', $new('option', '--none--')
+            .attr('selected', 'true')
+            .attr('value', ''), $new('optgroup', ...paletteOptions(spred.g_model.palettes[cpname] || {}))
+            .attr('label', cpname + ' special'), $new('optgroup', ...paletteOptions(commonPalette))
+            .attr('label', 'Common')).change(e => {
             let s = e.target;
             if (s.value) {
                 composite.colormap[cpname] = s.value;
@@ -519,7 +535,7 @@ var spred;
                 delete composite.colormap[cpname];
             }
             composite.redraw();
-        })))))
+        }).val(composite.colormap[cpname])))))
         /*$new('textarea.col.form-control'
         ).val(layers.join(', ')
         ).on('input change', e => {
