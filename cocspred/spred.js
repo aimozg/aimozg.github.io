@@ -256,6 +256,8 @@ var spred;
             this.name = name;
             this.width = width;
             this.height = height;
+            this.srcX = srcX;
+            this.srcY = srcY;
             this.dx = dx;
             this.dy = dy;
             this.canvas = document.createElement('canvas');
@@ -316,8 +318,9 @@ var spred;
             this.sprites = {};
             let x = $(src);
             this.sprites = {};
+            this.file = x.attr('file');
             this.whenLoaded =
-                loadFile(modeldir + x.attr('file'), 'img').then(img => {
+                loadFile(modeldir + this.file, 'img').then(img => {
                     x.children("cell").each((i, cell) => {
                         let name = cell.getAttribute('name');
                         let rect = (cell.getAttribute('rect') || '').match(/^(\d+),(\d+),(\d+),(\d+)$/);
@@ -336,6 +339,13 @@ var spred;
                     console.log('Loaded spritemap ' + img.src);
                     return this;
                 });
+        }
+        serialize() {
+            return `<spritemap file="${this.file}">\n` +
+                Object.keys(this.sprites).map(sn => {
+                    let s = this.sprites[sn];
+                    return `\t<cell rect="${s.srcX},${s.srcY},${s.width},${s.height}" name="${s.name}" dx="${s.dx}" dy="${s.dy}"/>`;
+                }).join('\n') + `\n</spritemap>`;
         }
         isLoaded() {
             return this.img != null;
@@ -659,8 +669,8 @@ var spred;
     function selLayerMove(dx, dy) {
         let layer = spred.g_sellayer;
         if (layer) {
-            layer.dx += dx;
-            layer.dy += dy;
+            layer.sprite.dx += dx;
+            layer.sprite.dy += dy;
             redrawAll();
             $('#SelLayerPos').html('(dx = ' + (layer.dx + layer.sprite.dx) +
                 ', dy = ' + (layer.dy + layer.sprite.dy) + ')');
@@ -749,6 +759,20 @@ var spred;
         });
     }
     spred.loadModel = loadModel;
+    function saveSpritemaps() {
+        $('#Loading').after($new('.row', $new('.col-12.card.card-success', $new('.card-block', $new('button.ctrl.text-danger.pull-left', $new('span.fa.fa-close')).click((e) => {
+            $(e.target).parents('.row').remove();
+        }), $new('button.ctrl.text-info.pull-left', $new('span.fa.fa-copy')).click((e) => {
+            let ta = $(e.target).parents('.row').find('textarea');
+            ta.focus().select();
+            document.execCommand('copy');
+            ta.val('Contents copied to clipboard!');
+        }), $new('textarea.form-control').val(spred.g_model.spritemaps.map(s => s.serialize()).join('\n'))))).css('flex-shrink', '0'));
+        /*<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  <span aria-hidden="true">&times;</span>
+</button>*/
+    }
+    spred.saveSpritemaps = saveSpritemaps;
     $(() => {
         loadFile(basedir + 'res/model.xml', 'xml').then(loadModel);
     });
