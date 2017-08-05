@@ -81,13 +81,23 @@
 <body>
 <div class="container-fluid" id="main">
 	<div class="row" style="flex-shrink: 0;">
-		<div class="col">
+		<div class="col-12">
 			<h3>CoC Sprite Editor</h3>
-			<button type="button" class="btn btn-secondary" onclick="spred.addCompositeView(spred.defaultLayerList)">
+			<button type="button" class="btn btn-secondary" onclick="spred.addCompositeView(spred.defaultLayerList())">
 				<span class="fa fa-plus"></span> Add view
 			</button>
+		</div>
+	</div>
+	<div class="row" id="Loading" style="flex-shrink:0;display:none">
+		<div class="col-12 card card-warning">
+			<div class="card-block">
+				<h5 class="card-header">Filesystem inaccessible</h5>
 
-
+				<div id="LoadingList"></div>
+				<h6>
+					<span class="text-muted small">(Tip: you can upload multiple files at once)</span>
+				</h6>
+			</div>
 		</div>
 	</div>
 	<div class="row" style="flex-grow:1">
@@ -95,8 +105,14 @@
 			<h4>Controls</h4>
 			<h5>Left button</h5>
 			<div class="form-check">
+				<label for="lmba-drag" class="form-check-label">
+					<input type="radio" name="lmb-action" id="lmba-drag" value="drag" checked>
+					Drag
+				</label>
+			</div>
+			<div class="form-check">
 				<label for="lmba-nothing" class="form-check-label">
-					<input type="radio" id="lmba-nothing" name="lmb-action" value="nothing" checked>
+					<input type="radio" id="lmba-nothing" name="lmb-action" value="nothing">
 					Nothing
 				</label>
 			</div>
@@ -150,15 +166,29 @@
 			</div>
 			<div class="card-block">
 				<h4 class="card-title">Selected:</h4>
-				<h5 class="card-subtitle">
-					<button class="ctrl" type="button" onclick="spred.selLayerUp()">
+				<h5 class="card-subtitle" id="SelLayerName">
+				</h5>
+				<div>
+					<button class="ctrl" type="button" onclick="spred.selLayerMove(-1,0)">
+						<span class="fa fa-caret-left"></span>
+					</button>
+					<button class="ctrl" type="button" onclick="spred.selLayerMove(1,0)">
+						<span class="fa fa-caret-right"></span>
+					</button>
+					<button class="ctrl" type="button" onclick="spred.selLayerMove(0,-1)">
+						<span class="fa fa-caret-up"></span>
+					</button>
+					<button class="ctrl" type="button" onclick="spred.selLayerMove(0,1)">
+						<span class="fa fa-caret-down"></span>
+					</button>
+					<!--<button class="ctrl" type="button" onclick="spred.selLayerUp()">
 						<span class="fa fa-caret-up"></span>
 					</button>
 					<button class="ctrl" type="button" onclick="spred.selLayerDown()">
 						<span class="fa fa-caret-down"></span>
-					</button>
-					<span id="SelLayerName">(none)</span>
-				</h5>
+					</button>-->
+				</div>
+				<h6 class="text-muted" id="SelLayerPos"></h6>
 				<h5>Canvas: </h5>
 				<div>
 					<em class="text-muted">right-click &amp; copy/save</em>
