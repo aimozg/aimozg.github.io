@@ -948,7 +948,7 @@ var spred;
                         sll.text('L=' + ((hsl.l * 100) | 0) + '%');
                         sla.css('background-color', tinycolor({ h: hsl.h, s: hsl.s, l: 0.1 }).toHslString());
                         slb.css('background-color', tinycolor({ h: hsl.h, s: hsl.s, l: 0.9 }).toHslString());
-                        pal[cn] = color.toRgbString();
+                        pal[cn] = color.toHexString();
                         g_update_color(pn, cn);
                     }
                     let hsl = tinycolor(pal[cn]).toHsl();
