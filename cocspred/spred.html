@@ -15,80 +15,7 @@
 	        crossorigin="anonymous"></script>
 	<script src="config.js"></script>
 	<script src="spred.js"></script>
-	<style type="text/css">
-		#main {
-			height:100vh;
-			display:flex;
-			flex-flow:column;
-		}
-		#main>.row {
-			margin: .5rem;
-		}
-		.canvas {
-			background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAG0lEQVQYV2M0Njb+v3v3bgbGd+/e/Xd1dWUAAEzpCGTyODpxAAAAAElFTkSuQmCC') repeat;
-			max-height: 576px;
-			max-width: 576px;
-			display: inline-block;
-			overflow: auto;
-			font-size:0;
-		}
-		#ViewList {
-			overflow: scroll;
-		}
-		#ViewList > * {
-			float: left;
-			margin: 0.25rem;
-		}
-		#ViewList > .card > .card-block {
-			padding: 0.5rem;
-		}
-		.LayerBadges:not(.collapse) {
-			max-width: 576px;
-			display: flex;
-			flex-wrap: wrap;
-		}
-		.LayerBadges > * {
-			margin:0 .5rem;
-		}
-		.LayerListItem {
-			display: flex;
-			align-items: center;
-		}
-		.LayerListItem:hover {
-			background: #ddeeff;
-			cursor:pointer;
-		}
-		.LayerListItem *:hover {
-			cursor:pointer;
-		}
-		.LayerListItem.selected {
-			background: #bbddff;
-		}
-		#SelLayerCanvas {
-			width:100%;
-			overflow:hidden;
-		}
-		.ctrl {
-			width: 24px;
-			height: 24px;
-			display: inline-flex;
-			justify-content: center;
-			align-items: center;
-			text-align: center;
-			border: 1px solid rgba(127,127,127,0.1);
-			border-radius: 4px;
-			cursor: pointer;
-		}
-		button.badge {
-			border: none;
-		}
-		.ctrl:hover {
-			border: 1px solid rgba(127,127,127,0.5);
-		}
-		a.ctrl, a.ctrl:hover, a.ctrl:focus, a.ctrl:active {
-			text-decoration: none;
-		}
-	</style>
+	<link rel="stylesheet" href="spred.css">
 </head>
 <body>
 <div class="container-fluid" id="main">
@@ -100,6 +27,9 @@
 			</button>
 			<button class="btn btn-secondary" onclick="spred.saveSpritemaps()">
 				<span class="fa fa-save"></span> Save spritemaps
+			</button>
+			<button class="btn btn-secondary" onclick="spred.savePalettes()">
+				<span class="fa fa-save"></span> Save palettes
 			</button>
 		</div>
 	</div>
@@ -172,43 +102,48 @@
 		<div class="col" id="ViewList">
 
 		</div>
-		<div class="col col-lg-auto d-flex flex-column" style="flex-basis:200px;">
-			<div class="d-flex flex-column">
-				<h4 class="card-title">Layers</h4>
-				<div id="LayerList" style="overflow-y:scroll;">
+		<div class="col col-lg-auto d-flex flex-column" style="flex-basis:280px;max-height:100%;">
+			<h4><button class="ctrl" type="button" onclick="$('#Palettes').toggle()"><span class="fa fa-plus-circle"></span></button> Palette</h4>
+			<div id="Palettes">
+
+			</div>
+			<h4><button class="ctrl" type="button" onclick="$('#Layers').toggle()"><span class="fa fa-plus-circle"></span></button> Layers</h4>
+			<div id="Layers">
+
+				<div id="LayerList" style="overflow-y:scroll;flex-shrink:1">
 
 				</div>
-			</div>
-			<div class="card-block">
-				<h4 class="card-title">Selected:</h4>
-				<h5 class="card-subtitle" id="SelLayerName">
-				</h5>
-				<div>
-					<button class="ctrl" type="button" onclick="spred.selPartMove(-1,0)">
-						<span class="fa fa-caret-left"></span>
-					</button>
-					<button class="ctrl" type="button" onclick="spred.selPartMove(1,0)">
-						<span class="fa fa-caret-right"></span>
-					</button>
-					<button class="ctrl" type="button" onclick="spred.selPartMove(0,-1)">
-						<span class="fa fa-caret-up"></span>
-					</button>
-					<button class="ctrl" type="button" onclick="spred.selPartMove(0,1)">
-						<span class="fa fa-caret-down"></span>
-					</button>
-					<!--<button class="ctrl" type="button" onclick="spred.selLayerUp()">
-						<span class="fa fa-caret-up"></span>
-					</button>
-					<button class="ctrl" type="button" onclick="spred.selLayerDown()">
-						<span class="fa fa-caret-down"></span>
-					</button>-->
+				<div style="flex-shrink:0;flex-grow:0;">
+					<h4>Selected:</h4>
+					<h5 id="SelLayerName">
+					</h5>
+					<div>
+						<button class="ctrl" type="button" onclick="spred.selPartMove(-1,0)">
+							<span class="fa fa-caret-left"></span>
+						</button>
+						<button class="ctrl" type="button" onclick="spred.selPartMove(1,0)">
+							<span class="fa fa-caret-right"></span>
+						</button>
+						<button class="ctrl" type="button" onclick="spred.selPartMove(0,-1)">
+							<span class="fa fa-caret-up"></span>
+						</button>
+						<button class="ctrl" type="button" onclick="spred.selPartMove(0,1)">
+							<span class="fa fa-caret-down"></span>
+						</button>
+						<!--<button class="ctrl" type="button" onclick="spred.selLayerUp()">
+							<span class="fa fa-caret-up"></span>
+						</button>
+						<button class="ctrl" type="button" onclick="spred.selLayerDown()">
+							<span class="fa fa-caret-down"></span>
+						</button>-->
+					</div>
+					<h6 class="text-muted" id="SelLayerPos"></h6>
+					<h5>Canvas: </h5>
+					<div>
+						<em class="text-muted">right-click &amp; copy/save</em>
+					</div>
+					<div id="SelLayerCanvas"></div>
 				</div>
-				<h6 class="text-muted" id="SelLayerPos"></h6>
-				<h5>Canvas: </h5>
-				<div>
-					<em class="text-muted">right-click &amp; copy/save</em>
-				</div>
-				<div id="SelLayerCanvas"></div>
 			</div>
 		</div>
 	</div>
