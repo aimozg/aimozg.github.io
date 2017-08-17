@@ -912,9 +912,7 @@ var spred;
                 sprite.ui = $new('div.LayerListItem', $new('label', ln), newCanvas(32, 32)).click(e => selSprite(ln));
                 sprite.updateUI();
             }
-            $('#SelLayerCanvas')
-                .css('min-width', model.width + 'px')
-                .css('min-height', model.height + 'px');
+            $('#SelLayerCanvas').css('min-width', model.width + 'px');
             selSprite(Object.keys(model.sprites)[0]);
             $('#lmb-color').html('').append(model.colorkeys.map(ck => $new('option', ck.base + (ck.transform ? ' ' + ck.transform : '')).attr('value', ck.src)));
             for (let part of model.allParts()) {
@@ -1062,6 +1060,15 @@ var spred;
                 'arms/chitin2', 'arms_bg/chitin2',
                 'legs_bg/drider',
                 'torso/chitin'
+            ]);
+            addCompositeView([
+                'ears_bg/mouse', 'ears/mouse',
+                'eyes/cat',
+                'head/fur', 'face/mouse',
+                'breasts/Dfur_nn',
+                'arms/mouse_fire', 'arms_bg/mouse_fire',
+                'legs/mouse_fire',
+                'torso/fur', 'tail/mouse_fire'
             ]);
             $('#ClipboardGrabber').on('paste', e => {
                 e.stopPropagation();
