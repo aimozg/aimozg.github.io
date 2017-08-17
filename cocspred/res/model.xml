@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<model name="demo" dir="./res/charview/" width="250" height="250" scale="1">
+<model name="demo" dir="./res/charview/" width="250" height="250" scale="1" originX="-25" originY="-25">
     <palette>
         <!--Colors common for skin/hair/fur/scales/... go here. Can be overriden later-->
         <common>
@@ -225,6 +225,15 @@
         <cell rect="301,57,59,54" name="hair_bg/0" dx="68" dy="13"/>
         <cell rect="1,181,23,11" name="breasts/0" dx="83" dy="74"/>
         <cell rect="1,213,119,68" name="tail/demon" dx="67" dy="89"/>
+        <cell rect="204,196,76,104" name="legs/harpy" dx="55" dy="101"/>
+        <cell rect="283,129,181,137" name="wings/feather_large" dx="7" dy="16"/>
+        <cell rect="364,30,75,88" name="hair/feather" dx="61" dy="-15"/>
+        <cell rect="440,30,75,88" name="hair_bg/feather" dx="61" dy="-15"/>
+        <cell rect="364,4,19,22" name="ears_bg/elfin" dx="61" dy="36"/>
+        <cell rect="384,4,29,22" name="ears/elfin" dx="107" dy="38"/>
+        <cell rect="284,273,35,51" name="arms_bg/harpy" dx="56" dy="63"/>
+        <cell rect="320,273,37,51" name="arms/harpy" dx="94" dy="63"/>
+        <cell rect="358,273,65,51" name="tail/harpy" dx="76" dy="107"/>
     </spritemap>
     <spritemap file="beasts.png">
         <cell rect="1,1,32,11" name="eyes/cat" dx="74" dy="38"/>
@@ -326,6 +335,7 @@
         <cell rect="315,64,84,61" name="hair_bg/gorgon" dx="50" dy="19"/>
         <cell rect="12,226,130,108" name="legs/naga" dx="32" dy="93"/>
         <cell rect="145,226,110,64" name="tail/reptile" dx="40" dy="99"/>
+        <cell rect="145,294,105,69" name="tail_fg/reptile_fire" dx="40" dy="99"/>
         <cell rect="258,226,53,119" name="wings_bg/scales_left" dx="32" dy="20"/>
         <cell rect="314,226,53,119" name="wings/scales_right" dx="104" dy="20"/>
     </spritemap>
@@ -353,6 +363,7 @@
         <layer name="torso"/>
 
         <layer name="hair_bg"/>
+        <layer name="tail_fg"/>
         <layer name="tail"/>
         <layer name="wings_bg"/>
     </layers>
