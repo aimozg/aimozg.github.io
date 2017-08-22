@@ -388,9 +388,9 @@
         <cell rect="2,380,196,186" name="tail/fox3" dx="-4" dy="5"/>
         <cell rect="201,380,196,186" name="tail/fox2" dx="-4" dy="5"/>
         <cell rect="400,380,196,186" name="tail/fox1" dx="-4" dy="5"/>
-        <cell rect="201,572,59,61" name="ears/foxL" dx="32" dy="-16"/>
+        <cell rect="201,572,59,61" name="ears/foxL" dx="42" dy="-16"/>
         <cell rect="261,572,67,61" name="ears/foxR" dx="89" dy="-16"/>
-        <cell rect="201,634,59,61" name="ears_bg/foxL" dx="32" dy="-16"/>
+        <cell rect="201,634,59,61" name="ears_bg/foxL" dx="42" dy="-16"/>
         <cell rect="261,634,67,61" name="ears_bg/foxR" dx="89" dy="-16"/>
     </spritemap>
     <spritemap file="manticore.png">
