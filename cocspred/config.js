@@ -1,1 +1,1 @@
-window['spred_basedir'] = '../../';
+window['spred_basedir'] = './';
