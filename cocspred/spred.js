@@ -41,9 +41,13 @@ function colormap(src, map) {
     let darr = new Uint32Array(dst.data.buffer);
     for (let i = 0, n = darr.length; i < n; i++) {
         darr[i] = sarr[i];
+        let sa = (sarr[i] & 0xff000000) >>> 0;
+        let srgb = (sarr[i] | 0xff000000) >>> 0;
+        if (sa === 0 || srgb === 0)
+            continue;
         for (let j = 0, m = map.length; j < m; j++) {
-            if (sarr[i] === map[j][0]) {
-                darr[i] = map[j][1];
+            if (srgb === map[j][0]) {
+                darr[i] = ((map[j][1] & 0x00ffffff) | sa) >>> 0;
                 break;
             }
         }
@@ -85,16 +89,6 @@ var spred;
     spred.g_composites = [];
     spred.g_selsprite = '';
     spred.g_selpart = null;
-    spred.rng_skippables = {
-        'tail': 1, 'wings': 1, 'antennae': 1, 'horns': 1, 'hair': 1, 'neck': 1
-    };
-    spred.rng_symmetrical = {
-        'wings_bg': 'wings',
-        'horns_bg': 'horns',
-        'hair_bg': 'hair',
-        'ears_bg': 'ears',
-        'arms_bg': 'arms'
-    };
     function tfcolor(tc, name, value) {
         let hsl = tc.clone().toHsl();
         switch (name) {
@@ -118,8 +112,17 @@ var spred;
                     q.push(...l.then);
             }
             else if (l instanceof LogicShow) {
-                //o[l.partExpr.split('/')[0]] = l.partExpr;
                 o.push(l.partExpr);
+            }
+            else if (l instanceof LogicHide) {
+                let m;
+                let part = l.partExpr;
+                if ((m = part.match(/^([^*]+)\*$/))) {
+                    o = o.filter(e => !e.startsWith(m[1]));
+                }
+                else {
+                    o = o.filter(e => e != part);
+                }
             }
             else if (l instanceof LogicSwitch) {
                 let i = randint(l.cases.length + 1) - 1;
@@ -485,6 +488,8 @@ var spred;
                     return lswitch;
                 case 'show':
                     return new LogicShow(x.getAttribute('part'));
+                case 'hide':
+                    return new LogicHide(x.getAttribute('part'));
                 case 'if':
                     let lif = new LogicIf(x.getAttribute("test"));
                     lif.then = LogicStmt.parseBlock($(x));
@@ -520,6 +525,13 @@ var spred;
         }
     }
     spred.LogicShow = LogicShow;
+    class LogicHide extends LogicStmt {
+        constructor(partExpr) {
+            super();
+            this.partExpr = partExpr;
+        }
+    }
+    spred.LogicHide = LogicHide;
     class LogicIf extends LogicStmt {
         constructor(testExpr) {
             super();
@@ -991,13 +1003,37 @@ var spred;
                 'torso/human'
             ]);
             addCompositeView([
+                'ears_bg/elfin', 'ears/elfin',
+                'eyes/human',
+                'hair/0', 'hair_bg/0',
+                'head/human', 'face/human',
+                'breasts/D',
+                'arms/human', 'arms_bg/human',
+                'legs/human',
+                'torso/human',
+                'wings/scales', 'wings_bg/scales',
+                'horns_bg/demon', 'tail/demon'
+            ]);
+            addCompositeView([
+                'ears_bg/human',
+                'eyes/human',
+                'hair/slime', 'hair_bg/slime2',
+                'head/goo', 'face/goo',
+                'neck/goocore',
+                'breasts/Dgoo',
+                'arms/goo', 'arms_bg/goo',
+                'legs/gooblob',
+                'torso/goo'
+            ]);
+            addCompositeView([
                 'ears_bg/human',
                 'eyes/devil',
                 'horns/devil', 'horns_bg/devil',
                 'hair/0', 'hair_bg/0',
                 'head/human', 'face/shark',
                 'breasts/D',
-                'arms/devil', 'arms_bg/devil',
+                'arms/human', 'arms_bg/human',
+                'hands/devil', 'hands_bg/devil',
                 'legs/devil',
                 'torso/human',
                 'tail/goat'
@@ -1008,10 +1044,11 @@ var spred;
                 'hair/feather', 'hair_bg/feather',
                 'head/human', 'face/human_fang',
                 'breasts/D',
-                'arms/harpy', 'arms_bg/harpy',
-                'legs/harpy',
+                'arms/human', 'arms_bg/human',
+                'hands/harpy', 'hands_bg/harpy',
+                'legs/harpy_human',
                 'torso/human',
-                'wings/feather_large',
+                'wings/feather_large', 'wings_bg/feather_large',
                 'tail/harpy'
             ]);
             addCompositeView([
@@ -1019,8 +1056,9 @@ var spred;
                 'eyes/orca',
                 'hair/0', 'hair_bg/0',
                 'head/orca', 'face/orca',
-                'breasts/D',
-                'arms/orca', 'arms_bg/orca', 'arms/fins-orca', 'arms_bg/fins-orca',
+                'breasts/Dskin2',
+                'arms/orca', 'arms_bg/orca',
+                'hands/fins-orca', 'hands_bg/fins-orca',
                 'legs/orca',
                 'torso/orca',
                 'tail/orca'
@@ -1032,7 +1070,7 @@ var spred;
                 'head/fur', 'face/fur',
                 'breasts/Dfur',
                 'arms/fur', 'arms_bg/fur',
-                'legs/furpaws',
+                'legs/fur',
                 'torso/fur',
                 'tail/cat1', 'tail/cat2'
             ]);
@@ -1042,7 +1080,7 @@ var spred;
                 'hair/0', 'hair_bg/0',
                 'head/human', 'face/human', 'neck/manticore',
                 'breasts/D',
-                'arms/manticore',
+                'arms/manticore_sit',
                 'legs/manticore_sit',
                 'torso/human',
                 'tail/manticore',
@@ -1051,12 +1089,12 @@ var spred;
             addCompositeView([
                 'hair/gorgon', 'hair_bg/gorgon',
                 'eyes/cat',
-                'head/scales_p', 'face/human_fang',
-                'breasts/Dscales_p',
-                'arms_bg/scales_p', 'arms/scales_p',
-                'ears_bg/Naga', 'ears/Naga',
+                'head/pscales', 'face/human_fang',
+                'breasts/Dpscales',
+                'arms_bg/pscales', 'arms/pscales',
+                'ears_bg/naga', 'ears/naga',
                 'legs/naga',
-                'torso/scales_p'
+                'torso/pscales'
             ]);
             addCompositeView([
                 'horns/2large',
@@ -1067,8 +1105,8 @@ var spred;
                 'legs/scales',
                 'torso/scales',
                 'tail/reptile', 'tail_fg/reptile_fire',
-                'wings/scales_right',
-                'wings_bg/scales_left',
+                'wings/scales',
+                'wings_bg/scales',
             ]);
             addCompositeView([
                 'antennae/bee',
@@ -1076,7 +1114,7 @@ var spred;
                 'head/bee', 'face/insect',
                 'breasts/Dbee',
                 'arms/bee', 'arms_bg/bee',
-                'legs/bee',
+                'legs/chitin',
                 'torso/bee',
                 'tail/bee_abdomen',
                 'wings/bee'
@@ -1095,9 +1133,22 @@ var spred;
                 'eyes/cat',
                 'head/fur', 'face/mouse',
                 'breasts/Dfur_nn',
-                'arms/mouse_fire', 'arms_bg/mouse_fire',
-                'legs/mouse_fire',
+                'arms/fur', 'arms_bg/fur',
+                'hands/fire', 'hands_bg/fire',
+                'legs/fur',
+                'feet/fire',
                 'torso/fur', 'tail/mouse_fire'
+            ]);
+            addCompositeView([
+                'ears_bg/weasel', 'ears/weasel',
+                'eyes/cat',
+                'head/human', 'face/human_fang', 'neck/weasel',
+                'breasts/D',
+                'arms/human', 'arms_bg/human',
+                'legs/human',
+                'torso/human',
+                'hair/raiju', 'hair_bg/raiju3',
+                'tail/weasel'
             ]);
             $('#ClipboardGrabber').on('paste', e => {
                 e.stopPropagation();

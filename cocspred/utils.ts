@@ -55,9 +55,12 @@ function colormap(src: ImageData, map: [number, number][]): ImageData {
 	let darr = new Uint32Array(dst.data.buffer);
 	for (let i = 0, n = darr.length; i < n; i++) {
 		darr[i] = sarr[i];
+		let sa = (sarr[i] & 0xff000000)>>>0;
+		let srgb = (sarr[i] | 0xff000000)>>>0;
+		if (sa === 0 || srgb === 0) continue;
 		for (let j = 0, m = map.length; j < m; j++) {
-			if (sarr[i] === map[j][0]) {
-				darr[i] = map[j][1];
+			if (srgb === map[j][0]) {
+				darr[i] = ((map[j][1] & 0x00ffffff) | sa) >>> 0;
 				break;
 			}
 		}
